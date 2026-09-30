@@ -105,6 +105,16 @@ const voices = ['Tous', 'Samy', 'Scooby', 'Samy & Scooby'];
       const search = document.querySelector('#search');
       const stopAll = document.querySelector('#stop-all');
       const empty = document.querySelector('#empty');
+      const audioByUrl = new Map();
+
+      pads.forEach((pad) => {
+        const audio = new Audio();
+        audio.preload = 'auto';
+        audio.src = pad.dataset.url;
+        audio.load();
+        audioByUrl.set(pad.dataset.url, audio);
+      });
+
       let currentAudio = null;
       let currentPad = null;
       let activeFilter = 'Tous';
@@ -143,7 +153,9 @@ const voices = ['Tous', 'Samy', 'Scooby', 'Samy & Scooby'];
         stopAudio();
         if (wasCurrent) return;
 
-        const audio = new Audio(pad.dataset.url);
+        const audio = audioByUrl.get(pad.dataset.url);
+        if (!audio) return;
+        audio.currentTime = 0;
         currentAudio = audio;
         currentPad = pad;
         pad.classList.add('playing');
